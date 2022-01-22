@@ -34,7 +34,7 @@ public class Chunk3DController : MonoBehaviour
 
     private void Update()
     {
-        if(_shouldRegen = true)
+        if(_shouldRegen == true)
         {
             _shouldRegen = false;
             GenerateVoxels();
