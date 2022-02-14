@@ -33,6 +33,7 @@ public class MyPlant : MonoBehaviour
 
         //Combining the Instances Together
         Mesh mesh = new Mesh();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         mesh.CombineMeshes(instances.ToArray());
 
         MeshFilter meshFilter = GetComponent<MeshFilter>();
@@ -52,7 +53,7 @@ public class MyPlant : MonoBehaviour
 
         int maxBranchPicker = (max - num);
         int branchPicker = (int)Random.Range(0, maxBranchPicker);
-        print("Max: " + max + " Num: " + (num) + "    maxBP " + (maxBranchPicker) + " bP: " + branchPicker + " Final: " + (maxBranchPicker - branchPicker));
+        //print("Max: " + max + " Num: " + (num) + "    maxBP " + (maxBranchPicker) + " bP: " + branchPicker + " Final: " + (maxBranchPicker - branchPicker));
 
         //Add to num, calc %
         float percentAtEnd = ++num / (float)max;

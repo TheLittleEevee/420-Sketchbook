@@ -23,11 +23,11 @@ public class CameraController : MonoBehaviour
 
         speed = Time.deltaTime * 100;
 
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
             transform.Rotate(new Vector3(0, -1, 0) * speed, Space.World);
         }
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.RightArrow))
         {
             transform.Rotate(new Vector3(0, 1, 0) * speed, Space.World);
         }
