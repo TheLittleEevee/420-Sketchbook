@@ -35,6 +35,7 @@ public class GravityAgent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        this.gameObject.transform.position = new Vector3 (Random.Range(-10, 10), Random.Range(-5, 5), Random.Range(0, 20));
         position = transform.position;
         mass = Random.Range(10, 100);
 
@@ -58,6 +59,13 @@ public class GravityAgent : MonoBehaviour
         foreach(GravityAgent a in agents)
         {
             FindGravityForce(this, a);
+            if (this != a && position.x >= a.position.x - 1 && position.x <= a.position.x + 1 && position.y >= a.position.y - 1 && position.y <= a.position.y + 1 && position.z >= a.position.z - 1 && position.z <= a.position.z + 1)
+            //if (this.position.x == a.position.x && this.position.y == a.position.y && this.position.z == a.position.z && this != a)
+            {
+                //print("Here");
+                velocity *= -1;
+                a.velocity *= -1;
+            }
         }
         isDone = true;
 
