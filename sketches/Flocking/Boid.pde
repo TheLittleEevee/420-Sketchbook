@@ -107,6 +107,11 @@ class Boid{
     //Cache the direction vector
     _dir = PVector.div(velocity, velocity.mag());
     
-    ellipse(position.x, position.y, 10, 10);
+    //ellipse(position.x, position.y, 10, 10);
+    pushMatrix();
+    translate(position.x, position.y);
+    rotate(_dir.heading());
+    triangle(5, 0, -5, -5, -5, 5);
+    popMatrix();
   }
 }
