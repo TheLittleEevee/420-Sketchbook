@@ -21,6 +21,10 @@ public class Prey : MonoBehaviour
     public float maxHideCounter;
     public float curHideCounter = 0;
 
+    public float maxBreedCounter = 10;
+    public float curBreedCounter = 10;
+    public bool canBreed = false;
+
     public bool isDead = false;
     public bool isHidden = false;
     public bool goHide = false;
@@ -31,14 +35,15 @@ public class Prey : MonoBehaviour
     void Start()
     {
         hunger = 80;
+        goBreed = false;
         if (!isBaby)
         {
             transform.position = new Vector3(Random.Range(-175, 175), .5f, Random.Range(-175, 175));
-            mass = Random.Range(5, 20);
+            mass = Random.Range(.5f, 2);
             //scaleModifier = Random.Range(1, 2);
-            scaleModifier = (((mass - 5) * (2 - 1)) / (20 - 5)) + 1; //Like Processing's Map function
+            scaleModifier = (((mass - .5f) * (2 - 1)) / (2 - .5f)) + 1; //Like Processing's Map function
             transform.localScale = new Vector3(1, 1, 1) * scaleModifier;
-            maxSpeed = Random.Range(80, 100);
+            maxSpeed = Random.Range(16, 25);
             maxHideCounter = Random.Range(5, 20);
             breedOn = Random.Range(90, 110);
             breedOff = Random.Range(60, 80);
@@ -56,6 +61,16 @@ public class Prey : MonoBehaviour
             //print("Dead prey");
         }
 
+        if (curBreedCounter > 0)
+        {
+            curBreedCounter -= Time.deltaTime;
+            if (curBreedCounter <= 0) canBreed = true;
+        }
+
+        if (hunger > 150)
+        {
+            hunger = 150;
+        }
         if (hunger >= breedOn)
         {
             goBreed = true;
@@ -132,9 +147,10 @@ public class Prey : MonoBehaviour
     {
         isBaby = true;
         hunger = 80;
+        goBreed = false;
         mass = Random.Range(a.GetComponent<Prey>().mass, b.GetComponent<Prey>().mass);
         transform.position = new Vector3(Random.Range(a.GetComponent<Prey>().transform.position.x, b.GetComponent<Prey>().transform.position.x), .5f, Random.Range(a.GetComponent<Prey>().transform.position.z, b.GetComponent<Prey>().transform.position.z));
-        scaleModifier = (((mass - 5) * (2 - 1)) / (20 - 5)) + 1; //Like Processing's Map function
+        scaleModifier = (((mass - .5f) * (2 - 1)) / (2 - .5f)) + 1; //Like Processing's Map function
         transform.localScale = new Vector3(1, 1, 1) * scaleModifier;
         maxSpeed = Random.Range(a.GetComponent<Prey>().maxSpeed, b.GetComponent<Prey>().maxSpeed);
         maxHideCounter = Random.Range(a.GetComponent<Prey>().maxHideCounter, b.GetComponent<Prey>().maxHideCounter);

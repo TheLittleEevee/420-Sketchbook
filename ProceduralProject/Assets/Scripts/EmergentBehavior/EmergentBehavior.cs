@@ -17,10 +17,27 @@ public class EmergentBehavior : MonoBehaviour
     public static List<GameObject> preyBabyQueue = new List<GameObject>();
     public static List<GameObject> predatorBabyQueue = new List<GameObject>();
 
+
+    public static List<GameObject> predatorDestroyQueue = new List<GameObject>();
+    public static List<GameObject> preyDestroyQueue = new List<GameObject>();
+    public static List<GameObject> grassDestroyQueue = new List<GameObject>();
+    public static List<GameObject> bushDestroyQueue = new List<GameObject>();
+
+    int maxGrass = 100;
+    int maxBushes = 10;
+
     bool spawnPreyButton = false;
     bool prevSpawnPreyButton = false;
     bool spawnPredButton = false;
     bool prevSpawnPredButton = false;
+    bool moreGrassButton = false;
+    bool prevMoreGrassButton = false;
+    bool moreBushesButton = false;
+    bool prevMoreBushesButton = false;
+    bool lessGrassButton = false;
+    bool prevLessGrassButton = false;
+    bool lessBushesButton = false;
+    bool prevLessBushesButton = false;
 
     // Start is called before the first frame update
     void Start()
@@ -51,6 +68,10 @@ public class EmergentBehavior : MonoBehaviour
         //Record Button Presses
         spawnPredButton = false;
         spawnPreyButton = false;
+        moreGrassButton = false;
+        moreBushesButton = false;
+        lessGrassButton = false;
+        lessBushesButton = false;
         if (Input.GetKey(KeyCode.RightShift))
         {
             spawnPreyButton = true;
@@ -59,15 +80,62 @@ public class EmergentBehavior : MonoBehaviour
         {
             spawnPredButton = true;
         }
+        if (Input.GetKey(KeyCode.Comma))
+        {
+            lessGrassButton = true;
+        }
+        if (Input.GetKey(KeyCode.Period))
+        {
+            moreGrassButton = true;
+        }
+        if (Input.GetKey(KeyCode.LeftBracket))
+        {
+            lessBushesButton = true;
+        }
+        if (Input.GetKey(KeyCode.RightBracket))
+        {
+            moreBushesButton = true;
+        }
+
+        //Change the max values of Grass and Bushes
+        if (lessGrassButton && !moreGrassButton)
+        {
+            maxGrass--;
+            if (maxGrass <= 0) maxGrass = 0;
+        }
+        if (moreGrassButton && !lessGrassButton)
+        {
+            maxGrass++;
+        }
+        if (lessBushesButton && !prevLessBushesButton && !moreBushesButton)
+        {
+            maxBushes--;
+            if (maxBushes <= 0) maxBushes = 0;
+        }
+        if (moreBushesButton && !prevMoreBushesButton && !lessBushesButton)
+        {
+            maxBushes++;
+        }
 
         //Spawn new objects
-        if (allGrass.Count < 100)
+        if (allGrass.Count < maxGrass)
         {
             allGrass.Add(Instantiate(grass));
         }
-        if (allBushes.Count < 10)
+        if (allGrass.Count > maxGrass)
+        {
+            int deleteThisIndex = Random.Range(0, allGrass.Count - 1);
+            allGrass[deleteThisIndex].GetComponent<Grass>().isDead = true;
+            //allGrass.RemoveAt(Random.Range(0, allGrass.Count - 1));
+        }
+        if (allBushes.Count < maxBushes)
         {
             allBushes.Add(Instantiate(bush));
+        }
+        if (allBushes.Count > maxBushes)
+        {
+            int deleteThisIndex = Random.Range(0, allBushes.Count - 1);
+            allBushes[deleteThisIndex].GetComponent<Bush>().isDead = true;
         }
         if (spawnPreyButton && !prevSpawnPreyButton)
         {
@@ -109,43 +177,67 @@ public class EmergentBehavior : MonoBehaviour
             p.GetComponent<Predator>().target = new Vector3 (p.transform.position.x, .5f, p.transform.position.z);
             if (p.GetComponent<Predator>().isDead)
             {
-                allPredators.Remove(p);
-                Destroy(p);
-                break;
+                predatorDestroyQueue.Add(p);
             }
         }
         foreach (GameObject p in allPrey)
         {
             p.GetComponent<Prey>().targetDis = 1000000000000000000;
+            p.GetComponent<Prey>().target = new Vector3(p.transform.position.x, .5f, p.transform.position.z);
             p.GetComponent<Prey>().goHide = false;
             if (p.GetComponent<Prey>().isDead)
             {
-                allPrey.Remove(p);
-                Destroy(p);
-                break;
+                preyDestroyQueue.Add(p);
             }
         }
         foreach (GameObject g in allGrass)
         {
             if (g.GetComponent<Grass>().isDead)
             {
-                allGrass.Remove(g);
-                Destroy(g);
-                break;
+                grassDestroyQueue.Add(g);
             }
         }
         foreach (GameObject b in allBushes)
         {
             if (b.GetComponent<Bush>().isDead)
             {
-                allBushes.Remove(b);
-                Destroy(b);
-                break;
+                bushDestroyQueue.Add(b);
             }
         }
 
+
+
+        foreach (GameObject p in predatorDestroyQueue)
+        {
+            allPredators.Remove(p);
+            Destroy(p);
+        }
+        foreach (GameObject p in preyDestroyQueue)
+        {
+            allPrey.Remove(p);
+            Destroy(p);
+        }
+        foreach (GameObject g in grassDestroyQueue)
+        {
+            allGrass.Remove(g);
+            Destroy(g);
+        }
+        foreach (GameObject b in bushDestroyQueue)
+        {
+            allBushes.Remove(b);
+            Destroy(b);
+        }
+        predatorDestroyQueue.Clear();
+        preyDestroyQueue.Clear();
+        grassDestroyQueue.Clear();
+        bushDestroyQueue.Clear();
+
         prevSpawnPreyButton = spawnPreyButton;
         prevSpawnPredButton = spawnPredButton;
+        prevMoreGrassButton = moreGrassButton;
+        prevMoreBushesButton = moreBushesButton;
+        prevLessGrassButton = lessGrassButton;
+        prevLessBushesButton = lessBushesButton;
     }
 
     void GetTarget(GameObject targeter, string type)
@@ -173,14 +265,18 @@ public class EmergentBehavior : MonoBehaviour
                             targeter.GetComponent<Predator>().target = new Vector3(p.transform.position.x, .5f, p.transform.position.z);
                         }
 
-                        if (dis < 3)
+                        if (dis < 3 && p.GetComponent<Predator>().canBreed && targeter.GetComponent<Predator>().canBreed)
                         {
                             targeter.GetComponent<Predator>().hunger /= 1.5f;
                             if (targeter.GetComponent<Predator>().hunger >= targeter.GetComponent<Predator>().breedOn) targeter.GetComponent<Predator>().hunger = targeter.GetComponent<Predator>().breedOn - 1;
                             targeter.GetComponent<Predator>().goBreed = false;
+                            targeter.GetComponent<Predator>().curBreedCounter = targeter.GetComponent<Predator>().maxBreedCounter;
+                            targeter.GetComponent<Predator>().canBreed = false;
                             p.GetComponent<Predator>().hunger /= 1.5f;
                             if (p.GetComponent<Predator>().hunger >= p.GetComponent<Predator>().breedOn) p.GetComponent<Predator>().hunger = p.GetComponent<Predator>().breedOn - 1;
                             p.GetComponent<Predator>().goBreed = false;
+                            p.GetComponent<Predator>().curBreedCounter = p.GetComponent<Predator>().maxBreedCounter;
+                            p.GetComponent<Predator>().canBreed = false;
 
                             GameObject baby = Instantiate(predator);
 
@@ -221,7 +317,7 @@ public class EmergentBehavior : MonoBehaviour
                     {
                         p.GetComponent<Prey>().isDead = true;
                         targeter.GetComponent<Predator>().targetDis = 1000000000000000000;
-                        targeter.GetComponent<Predator>().hunger += p.GetComponent<Prey>().mass;
+                        targeter.GetComponent<Predator>().hunger += p.GetComponent<Prey>().mass * 10;
                     }
                 }
             }
@@ -257,11 +353,11 @@ public class EmergentBehavior : MonoBehaviour
                     targeter.GetComponent<Prey>().isHidden = false;
                 }
             }
-            else if (targeter.GetComponent<Prey>().goBreed)
+            else if (targeter.GetComponent<Prey>().goBreed && targeter.GetComponent<Prey>().canBreed)
             {
                 foreach (GameObject p in allPrey)
                 {
-                    if (p.GetComponent<Prey>().goBreed && p != targeter)
+                    if (p.GetComponent<Prey>().goBreed && p.GetComponent<Prey>().canBreed && p != targeter)
                     {
                         float dx = p.transform.position.x - targeter.transform.position.x;
                         float dz = p.transform.position.z - targeter.transform.position.z;
@@ -278,14 +374,18 @@ public class EmergentBehavior : MonoBehaviour
                             targeter.GetComponent<Prey>().target = new Vector3(p.transform.position.x, .5f, p.transform.position.z);
                         }
 
-                        if (dis < 3)
+                        if (dis < 3 && p.GetComponent<Prey>().canBreed && targeter.GetComponent<Prey>().canBreed)
                         {
                             targeter.GetComponent<Prey>().hunger /= 1.5f;
                             if (targeter.GetComponent<Prey>().hunger >= targeter.GetComponent<Prey>().breedOn) targeter.GetComponent<Prey>().hunger = targeter.GetComponent<Prey>().breedOn - 1;
                             targeter.GetComponent<Prey>().goBreed = false;
+                            targeter.GetComponent<Prey>().curBreedCounter = targeter.GetComponent<Prey>().maxBreedCounter;
+                            targeter.GetComponent<Prey>().canBreed = false;
                             p.GetComponent<Prey>().hunger /= 1.5f;
                             if (p.GetComponent<Prey>().hunger >= p.GetComponent<Prey>().breedOn) p.GetComponent<Prey>().hunger = p.GetComponent<Prey>().breedOn - 1;
                             p.GetComponent<Prey>().goBreed = false;
+                            p.GetComponent<Prey>().curBreedCounter = p.GetComponent<Prey>().maxBreedCounter;
+                            p.GetComponent<Prey>().canBreed = false;
 
                             GameObject baby = Instantiate(prey);
 

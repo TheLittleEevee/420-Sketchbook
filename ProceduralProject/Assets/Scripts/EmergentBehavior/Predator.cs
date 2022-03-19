@@ -17,6 +17,10 @@ public class Predator : MonoBehaviour
     public Vector3 target;
     public float targetDis = 1000000000000000000;
 
+    public float maxBreedCounter = 10;
+    public float curBreedCounter = 10;
+    public bool canBreed = false;
+
     public bool isDead = false;
     public bool goBreed = false;
     bool isBaby = false;
@@ -25,15 +29,16 @@ public class Predator : MonoBehaviour
     void Start()
     {
         hunger = 80;
+        goBreed = false;
         if (!isBaby)
         {
             transform.position = new Vector3(Random.Range(-175, 175), .5f, Random.Range(-175, 175));
             target = transform.position;
-            mass = Random.Range(20, 50);
+            mass = Random.Range(2, 5);
             //scaleModifier = Random.Range(2, 5);
-            scaleModifier = (((mass - 20) * (5 - 2)) / (50 - 20)) + 2; //Like Processing's Map function
+            scaleModifier = (((mass - 2) * (5 - 2)) / (5 - 2)) + 2; //Like Processing's Map function
             transform.localScale = new Vector3(1, 1, 1) * scaleModifier;
-            maxSpeed = Random.Range(60, 80);
+            maxSpeed = Random.Range(15, 20);
             breedOn = Random.Range(80, 100);
             breedOff = Random.Range(50, 70);
         }
@@ -49,6 +54,16 @@ public class Predator : MonoBehaviour
             //print("Dead predator");
         }
 
+        if (curBreedCounter > 0)
+        {
+            curBreedCounter -= Time.deltaTime;
+            if (curBreedCounter <= 0) canBreed = true;
+        }
+
+        if (hunger > 150)
+        {
+            hunger = 150;
+        }
         if (hunger >= breedOn)
         {
             goBreed = true;
@@ -108,9 +123,10 @@ public class Predator : MonoBehaviour
     {
         isBaby = true;
         hunger = 80;
+        goBreed = false;
         mass = Random.Range(a.GetComponent<Predator>().mass, b.GetComponent<Predator>().mass);
         transform.position = new Vector3(Random.Range(a.GetComponent<Predator>().transform.position.x, b.GetComponent<Predator>().transform.position.x), .5f, Random.Range(a.GetComponent<Predator>().transform.position.z, b.GetComponent<Predator>().transform.position.z));
-        scaleModifier = (((mass - 20) * (5 - 2)) / (50 - 20)) + 2; //Like Processing's Map function
+        scaleModifier = (((mass - 2) * (5 - 2)) / (5 - 2)) + 2; //Like Processing's Map function
         transform.localScale = new Vector3(1, 1, 1) * scaleModifier;
         maxSpeed = Random.Range(a.GetComponent<Predator>().maxSpeed, b.GetComponent<Predator>().maxSpeed);
         breedOn = Random.Range(a.GetComponent<Predator>().breedOn, b.GetComponent<Predator>().breedOn);
