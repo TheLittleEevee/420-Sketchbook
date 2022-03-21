@@ -7,6 +7,7 @@ public static class Pathfinder
     public class Node
     {
         public Vector3 position;
+        public float moveCost = 1;
 
         public float G { get; private set; }
         public float H { get; private set; }
@@ -17,46 +18,44 @@ public static class Pathfinder
                 return G + H;
             }
         }
-        public float moveCost = 1;
 
         public List<Node> neighbors = new List<Node>();
 
-        private Node _parent;
+        public Node parent { get; private set; }
 
-        public Node parent
+        public void UpdateParentAndG(Node parent, float extraG = 0)
         {
-            get
+            this.parent = parent;
+            if (parent != null)
             {
-                return _parent;
+                G = parent.G + moveCost + extraG;
             }
-            set
+            else
             {
-                _parent = value;
-                if (_parent != null)
-                {
-                    G = _parent.G + moveCost;
-                }
-                else
-                {
-                    G = 0;
-                }
+                G = extraG;
             }
         }
 
+        //Makes an educated guess as to how far we are from end
         public void DoHeuristic (Node end)
         {
+            //Euclidean Heuristic
             Vector3 d = end.position - this.position;
-
             H = d.magnitude;
+
+            //Manhattan Heuristic
+            //H = d.x + d.y + d.z;
         }
     }
 
     public static List<Node> Solve(Node start, Node end)
     {
-        List<Node> open = new List<Node>();
-        List<Node> closed = new List<Node>();
+        if (start == null || end == null) return new List<Node>();
 
-        start.parent = null;
+        List<Node> open = new List<Node>(); //All the nodes that have been discovered, but not "scanned"
+        List<Node> closed = new List<Node>(); //These nodes are "scanned"
+
+        start.UpdateParentAndG(null);
         open.Add(start);
 
         //Travel from start to end
@@ -75,6 +74,7 @@ public static class Pathfinder
                 }
             }
 
+            //If this node is the end, stop looping
             if (current == end)
             {
                 break;
@@ -87,8 +87,10 @@ public static class Pathfinder
                     if (!open.Contains(neighbor)) //Node not in OPEN
                     {
                         open.Add(neighbor);
-                        //Set parent, G, and H
-                        neighbor.parent = current;
+
+                        float dis = (neighbor.position - current.position).magnitude;
+
+                        neighbor.UpdateParentAndG(current, dis); //Set child's parent and G value
                         if (neighbor == end)
                         {
                             isDone = true;
@@ -98,14 +100,18 @@ public static class Pathfinder
                     else //If node is already in the OPEN list
                     {
                         //If this path to neighbor has lower G than previous path to neighbor
-                        if (current.G + neighbor.moveCost < neighbor.G)
+                        float dis = (neighbor.position - current.position).magnitude;
+
+                        if (current.G + neighbor.moveCost + dis < neighbor.G)
                         {
                             //It's shorter to move to neighbor from current
-                            neighbor.parent = current;
+                            neighbor.UpdateParentAndG(current, dis);
                         }
                     }
                 }
             }
+            closed.Add(current);
+            open.Remove(current);
             if (isDone) break;
         }
         //Travel from end to start, building path

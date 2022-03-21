@@ -1,25 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
+[RequireComponent(typeof(LineRenderer))]
 public class GridController : MonoBehaviour
 {
     delegate Pathfinder.Node LookupDelegate(int x, int y);
 
     public TerrainCube cubePrefab;
 
+    public Transform helperStart;
+    public Transform helperEnd;
+
     private TerrainCube[,] cubes;
+
+    private LineRenderer line;
 
     // Start is called before the first frame update
     void Start()
     {
+        line = GetComponent<LineRenderer>();
         MakeGrid();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        MakeNodes();
     }
 
     void MakeGrid()
@@ -36,7 +44,7 @@ public class GridController : MonoBehaviour
         }
     }
 
-    void MakeNodes()
+    public void MakeNodes()
     {
         Pathfinder.Node[,] nodes = new Pathfinder.Node[cubes.GetLength(0), cubes.GetLength(1)];
 
@@ -47,7 +55,7 @@ public class GridController : MonoBehaviour
                 Pathfinder.Node n = new Pathfinder.Node();
 
                 n.position = cubes[x, y].transform.position;
-                n.moveCost = cubes[x, y].isSolid ? 9999 : 1;
+                n.moveCost = cubes[x, y].MoveCost;
                 
                 nodes[x, y] = n;
             }
@@ -67,20 +75,72 @@ public class GridController : MonoBehaviour
             {
                 Pathfinder.Node n = nodes[x, y];
 
+                //NonDiagonal
                 Pathfinder.Node neighbor1 = lookup(x + 1, y);
                 Pathfinder.Node neighbor2 = lookup(x - 1, y);
                 Pathfinder.Node neighbor3 = lookup(x, y + 1);
                 Pathfinder.Node neighbor4 = lookup(x, y - 1);
+                //Diagonal
+                Pathfinder.Node neighbor5 = lookup(x + 1, y + 1);
+                Pathfinder.Node neighbor6 = lookup(x - 1, y - 1);
+                Pathfinder.Node neighbor7 = lookup(x -1, y + 1);
+                Pathfinder.Node neighbor8 = lookup(x + 1, y - 1);
+
                 if (neighbor1 != null) n.neighbors.Add(neighbor1);
                 if (neighbor2 != null) n.neighbors.Add(neighbor2);
                 if (neighbor3 != null) n.neighbors.Add(neighbor3);
                 if (neighbor4 != null) n.neighbors.Add(neighbor4);
+
+                if (neighbor5 != null) n.neighbors.Add(neighbor5);
+                if (neighbor6 != null) n.neighbors.Add(neighbor6);
+                if (neighbor7 != null) n.neighbors.Add(neighbor7);
+                if (neighbor8 != null) n.neighbors.Add(neighbor8);
             }
         }
 
-        Pathfinder.Node start = nodes[Random.Range(0, nodes.GetLength(0)), Random.Range(0, nodes.GetLength(1))];
-        Pathfinder.Node end = nodes[Random.Range(0, nodes.GetLength(0)), Random.Range(0, nodes.GetLength(1))];
+        //Making a path through the "dungeon"
+        Pathfinder.Node start = Lookup(helperStart.position, nodes);
+        Pathfinder.Node end = Lookup(helperEnd.position, nodes);
+        //Pathfinder.Node start = nodes[(int)Random.Range(0, nodes.GetLength(0)), (int)Random.Range(0, nodes.GetLength(1))];
+        //Pathfinder.Node end = nodes[(int)Random.Range(0, nodes.GetLength(0)), (int)Random.Range(0, nodes.GetLength(1))];
 
         List<Pathfinder.Node> path = Pathfinder.Solve(start, end);
+
+        //Rendering the path on a LineRenderer
+        Vector3[] positions = new Vector3[path.Count];
+        for (int i = 0; i < path.Count; i++)
+        {
+            positions[i] = path[i].position + new Vector3(0, .5f, 0);
+        }
+        line.positionCount = positions.Length;
+        line.SetPositions(positions);
+    }
+
+    public Pathfinder.Node Lookup(Vector3 pos, Pathfinder.Node[,] nodes)
+    {
+        float w = 1;
+        float h = 1;
+
+        int x = (int)(pos.x / w); //Should truncate (round down if positive, but up if negative)
+        int y = (int)(pos.z / h);
+
+        if (x < 0 || y < 0) return null;
+        if (x >= nodes.GetLength(0) || y >= nodes.GetLength(1)) return null;
+
+        return nodes[x, y];
+    }
+}
+
+[CustomEditor(typeof(GridController))]
+class GridControllerEditor : Editor
+{
+    public override void OnInspectorGUI() //Runs when the mouse is moving?
+    {
+        base.OnInspectorGUI();
+
+        if (GUILayout.Button("fina a path")) //Returns true if clicked
+        {
+            (target as GridController).MakeNodes();
+        }
     }
 }
