@@ -38,10 +38,15 @@ public class TerrainCube : MonoBehaviour
 
     void OnMouseDown() //Automatically called when object is clicked on as long as it has a collider
     {
+        //Change this TerrainCube's state (wall/slime/none)
         type += 1;
         if ((int)type > 2) type = 0;
 
+        //Change this TerrainCube's artwork
         UpdateArt();
+
+        //Rebuild our array of nodes
+        if (GridController.singleton) GridController.singleton.MakeNodes();
     }
 
     void UpdateArt()
