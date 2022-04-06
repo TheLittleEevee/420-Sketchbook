@@ -12,6 +12,10 @@ void setup(){
 
 void draw(){
   //background(100);
+  
+  float time = millis() / 1000.0;
+  shader.set("time", time);
+  
   pushMatrix();
   translate(mouseX, mouseY);
   scale(.25);
