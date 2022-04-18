@@ -7,11 +7,12 @@ Shader "MirandasShaders/Dissolve"
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
         _Threshold ("Threshold", Range(0, 1)) = 0.5
+        _TimeOffset ("Time Offset", Float) = 0.0
     }
     SubShader
     {
         Tags { "RenderType"="Opaque"}
-        Blend SrcAlpha OneMinusSrcAlpha
+        //Blend SrcAlpha OneMinusSrcAlpha
         LOD 200
 
         CGPROGRAM
@@ -32,6 +33,7 @@ Shader "MirandasShaders/Dissolve"
         half _Metallic;
         fixed4 _Color;
         float _Threshold;
+        half _TimeOffset;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -47,7 +49,7 @@ Shader "MirandasShaders/Dissolve"
             // Albedo comes from a texture tinted by color
             fixed4 c = _Color;
 
-            float t = (sin(_Time.y) * .5 + .5);
+            float t = (sin(_Time.y + _TimeOffset) * .5 + .5);
 
             if (noise.r > t) {
                 c = float4(0, 0, 0, 0);

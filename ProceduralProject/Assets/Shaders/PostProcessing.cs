@@ -17,6 +17,11 @@ public class PostProcessing : MonoBehaviour
         mat.SetTexture("_NoiseTex", noiseTexture);
     }
 
+    public void UpdateAmp(float amp)
+    {
+        mat.SetFloat("_Amp", amp);
+    }
+
     //Called on a camera when it's rendering a screen
     void OnRenderImage(RenderTexture src, RenderTexture dst)
     {

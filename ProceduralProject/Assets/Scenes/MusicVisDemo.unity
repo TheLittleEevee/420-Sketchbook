@@ -375,11 +375,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 118da650d10ede940b8fd3080d910103, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 10
-  amp: 8
+  ringRadius: 10
+  ringHeight: 4
   orbHeight: 10
   numBands: 512
-  prefabOrb: {fileID: 5291636625955998668, guid: c72e94e972d10e4488815365340ae469, type: 3}
+  prefabOrb: {fileID: 4171247940426604797, guid: c72e94e972d10e4488815365340ae469, type: 3}
+  ppShader: {fileID: 1586708472}
+  avgAmp: 0
 --- !u!120 &1394228603
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -490,6 +492,7 @@ GameObject:
   - component: {fileID: 1586708471}
   - component: {fileID: 1586708470}
   - component: {fileID: 1586708469}
+  - component: {fileID: 1586708472}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -563,3 +566,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1586708472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1586708468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 256c00fa2f63d524d9caab1b2908453e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shader: {fileID: 4800000, guid: f441d5de58e80344c8a77c3d95f545b8, type: 3}
+  noiseTexture: {fileID: 2800000, guid: 7995b1398d662d345a2fca215302da15, type: 3}
