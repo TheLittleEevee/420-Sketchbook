@@ -60,6 +60,7 @@ public class DemoHUD : MonoBehaviour
         }
         catch (System.Exception e)
         {
+            print(e);
             return;
         }
 
@@ -71,7 +72,7 @@ public class DemoHUD : MonoBehaviour
         }
         catch (System.Exception e)
         {
-
+            print(e);
         }
 
         stream.Close();

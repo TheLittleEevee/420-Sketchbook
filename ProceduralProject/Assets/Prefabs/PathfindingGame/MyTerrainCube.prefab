@@ -227,7 +227,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9630a9deaeaea7a4b812a2aebb1d3e83, type: 2}
+  - {fileID: 2100000, guid: 1380e38e85244254880d455f32d007ac, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -404,6 +404,7 @@ MonoBehaviour:
   tower: {fileID: 970552698466138528}
   spawner: {fileID: 1784147841412407984}
   type: 0
+  curHealth: 0
 --- !u!1 &5019067118047222823
 GameObject:
   m_ObjectHideFlags: 0
@@ -631,7 +632,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 26d091eac0244874e80a74fef235f27a, type: 2}
+  - {fileID: 2100000, guid: 1380e38e85244254880d455f32d007ac, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

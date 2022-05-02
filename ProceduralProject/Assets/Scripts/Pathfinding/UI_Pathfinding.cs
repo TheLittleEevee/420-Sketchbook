@@ -28,10 +28,10 @@ public class UI_Pathfinding : MonoBehaviour
                 MyGrid.singleton.activeCubeSwap = 2;
                 MyGrid.singleton.price = 10;
             }
-            if (GUI.Button(new Rect(430, Screen.height - 40, 130, 30), "Lava Terrain = $60") || Input.GetKey(KeyCode.Alpha4))
+            if (GUI.Button(new Rect(430, Screen.height - 40, 130, 30), "Lava Terrain = $50") || Input.GetKey(KeyCode.Alpha4))
             {
                 MyGrid.singleton.activeCubeSwap = 3;
-                MyGrid.singleton.price = 60;
+                MyGrid.singleton.price = 50;
             }
             if (GUI.Button(new Rect(570, Screen.height - 40, 130, 30), "Spike Terrain = $5") || Input.GetKey(KeyCode.Alpha5))
             {

@@ -23,8 +23,8 @@ public class EmergentBehavior : MonoBehaviour
     public static List<GameObject> grassDestroyQueue = new List<GameObject>();
     public static List<GameObject> bushDestroyQueue = new List<GameObject>();
 
-    int maxGrass = 100;
-    int maxBushes = 10;
+    public int maxGrass = 100;
+    public int maxBushes = 10;
 
     bool spawnPreyButton = false;
     bool prevSpawnPreyButton = false;
@@ -76,7 +76,7 @@ public class EmergentBehavior : MonoBehaviour
         {
             spawnPreyButton = true;
         }
-        if (Input.GetKey(KeyCode.Return))
+        if (Input.GetKey(KeyCode.RightControl))
         {
             spawnPredButton = true;
         }
@@ -424,5 +424,15 @@ public class EmergentBehavior : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SpawnNewPrey()
+    {
+        allPrey.Add(Instantiate(prey));
+    }
+
+    public void SpawnNewPred()
+    {
+        allPredators.Add(Instantiate(predator));
     }
 }

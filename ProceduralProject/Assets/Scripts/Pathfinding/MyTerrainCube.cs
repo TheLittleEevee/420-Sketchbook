@@ -65,7 +65,7 @@ public class MyTerrainCube : MonoBehaviour
             if (type == MyTerrainType.Water) return 9999;
             if (type == MyTerrainType.Lava) return 9999;
             if (type == MyTerrainType.Spike) return 9999;
-            if (type == MyTerrainType.Tower) return 500;
+            if (type == MyTerrainType.Tower) return 750;
             if (type == MyTerrainType.Spawner) return 9999;
             return 9999;
         }
@@ -80,7 +80,7 @@ public class MyTerrainCube : MonoBehaviour
             if (type == MyTerrainType.Open) return 0;
             if (type == MyTerrainType.Wall) return 20;
             if (type == MyTerrainType.Water) return 10;
-            if (type == MyTerrainType.Lava) return 60;
+            if (type == MyTerrainType.Lava) return 50;
             if (type == MyTerrainType.Spike) return 5;
             if (type == MyTerrainType.Tower) return 0;
             if (type == MyTerrainType.Spawner) return 0;
@@ -102,6 +102,16 @@ public class MyTerrainCube : MonoBehaviour
         if (type == MyTerrainType.Tower)
         {
             MyGrid.singleton.towerHealth = (int)Mathf.Ceil(curHealth);
+
+            this.gameObject.transform.GetChild(5).GetComponent<MeshRenderer>().material.SetFloat("_Red", 0);
+            this.gameObject.transform.GetChild(5).GetComponent<MeshRenderer>().material.SetFloat("_Green", 0);
+            this.gameObject.transform.GetChild(5).GetComponent<MeshRenderer>().material.SetFloat("_Blue", Mathf.Lerp(0, 1, Mathf.InverseLerp(0, Health, curHealth)));
+        }
+        else if (type == MyTerrainType.Wall)
+        {
+            this.gameObject.transform.GetChild(1).GetComponent<MeshRenderer>().material.SetFloat("_Red", 0);
+            this.gameObject.transform.GetChild(1).GetComponent<MeshRenderer>().material.SetFloat("_Green", Mathf.Lerp(0, 1, Mathf.InverseLerp(0, Health, curHealth)));
+            this.gameObject.transform.GetChild(1).GetComponent<MeshRenderer>().material.SetFloat("_Blue", 0);
         }
 
         if (curHealth <= 0)

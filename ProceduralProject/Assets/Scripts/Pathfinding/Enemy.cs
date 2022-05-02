@@ -27,6 +27,10 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        this.gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Red", Mathf.Lerp(0, 1, Mathf.InverseLerp(0, MyGrid.singleton.enemyMaxHealth, curHealth)));
+        this.gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Green", 0);
+        this.gameObject.GetComponent<MeshRenderer>().material.SetFloat("_Blue", 0);
+
         if (curHealth <= 0)
         {
             isDead = true;
@@ -54,7 +58,13 @@ public class Enemy : MonoBehaviour
                 if (pathToTarget[0].moveCost == 9999)
                 {
                     //Damage wall
-                    MyTerrainCube c = MyGrid.singleton.LookupCube(MyGrid.singleton.Lookup(transform.position));
+                    MyTerrainCube c = MyGrid.singleton.LookupCube(MyGrid.singleton.Lookup(pathToTarget[0].position));
+                    c.curHealth -= 5 * Time.deltaTime;
+                }
+                else if (pathToTarget[1].moveCost == 9999)
+                {
+                    //Damage wall
+                    MyTerrainCube c = MyGrid.singleton.LookupCube(MyGrid.singleton.Lookup(pathToTarget[1].position));
                     c.curHealth -= 5 * Time.deltaTime;
                 }
             }
@@ -106,11 +116,15 @@ public class Enemy : MonoBehaviour
         target.y += 1;
 
         //To Do: Grab first item in path and move to that node
-        if (pathToTarget[0].moveCost == 1) transform.position = Vector3.Lerp(transform.position, target, .01f); //Last parameter is its speed
-        if (pathToTarget[0].moveCost == 9999 || pathToTarget[0].moveCost == 999) transform.position = Vector3.Lerp(transform.position, target, 0f); //Last parameter is its speed
-        if (pathToTarget[0].moveCost == 10) transform.position = Vector3.Lerp(transform.position, target, .003f); //Last parameter is its speed
-        if (pathToTarget[0].moveCost == 20) transform.position = Vector3.Lerp(transform.position, target, .001f); //Last parameter is its speed
-        if (pathToTarget[0].moveCost == 5) transform.position = Vector3.Lerp(transform.position, target, .006f); //Last parameter is its speed
+        if (pathToTarget[1].moveCost == 9999 || pathToTarget[0].moveCost == 9999 || pathToTarget[0].moveCost == 999) transform.position = Vector3.Lerp(transform.position, target, 0f); //Last parameter is its speed
+        else
+        {
+            if (pathToTarget[0].moveCost == 1) transform.position = Vector3.Lerp(transform.position, target, .01f); //Last parameter is its speed
+            if (pathToTarget[0].moveCost == 10) transform.position = Vector3.Lerp(transform.position, target, .003f); //Last parameter is its speed
+            if (pathToTarget[0].moveCost == 20) transform.position = Vector3.Lerp(transform.position, target, .001f); //Last parameter is its speed
+            if (pathToTarget[0].moveCost == 5) transform.position = Vector3.Lerp(transform.position, target, .006f); //Last parameter is its speed
+        }
+        
 
 
         float d = (pathToTarget[1].position - transform.position).magnitude;
